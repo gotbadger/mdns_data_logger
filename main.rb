@@ -52,7 +52,7 @@ class Discovery
   def initialize
     @discovered = []
     discover
-    @timer = every(SEARCH_FREQUENCY_SECONDS) { discover }
+    #@timer = every(SEARCH_FREQUENCY_SECONDS) { discover }
   end
 
   private
@@ -82,9 +82,7 @@ class Server
 
   def spawner
     Celluloid::Actor[:discovery].discovered.each do |device_name|
-      unless Celluloid::Actor[device_name]
-        Celluloid::Actor[device_name] = Device.new(device_name)
-      end
+      Celluloid::Actor[device_name] ||= Device.new(device_name)
       Celluloid::Actor[device_name].async.run(Celluloid::Actor[:store])
     end
   end
